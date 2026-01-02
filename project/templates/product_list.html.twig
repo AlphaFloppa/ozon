@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+    {% block title %}
+        <title>Каталог товаров</title>
+    {% endblock %}
+    {% block stylesheets%}
+        <link rel = "stylesheet" href = "/css/products_list.css" />
+    {% endblock %}
+    {% block body %}
+        <div class="cards-container">
+            {% for productData in productsDatas %}
+                <div class="product-card">
+                    <img src = "product_images/{{ productData.getImage() }}" alt = "smth went wrong" class = "product-image">
+                    <div class="product-title">{{ productData.getName() }}</div>
+                    <div class="product-price">{{ productData.getPrice() }}₽</div>
+                </div>
+            {% endfor %}
+        </div>
+        <span class = "target-text">Владик пидорас</span>
+    {% endblock %}
