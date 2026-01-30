@@ -12,13 +12,13 @@ interface ProductAPIInterface
     /**
      * @return ProductData[]
      */
-    public function getPublicProductImagesDirectory(): string;
+    //public function getPublicProductImagesDirectory(): string;
 
     public function getProductsList(): array;
 
     public function findProduct(int $id): ?ProductData;
 
-    public function createProduct(Product $product): void;
+    public function saveProduct(Product $product): void;
 
     public function deleteProduct(int $id): void;
 }

@@ -20,11 +20,10 @@ class CreateProductType extends AbstractType
                 'price', 
                 MoneyType::class,
                 [
-                    'currency' => 'RUB',
-                    'grouping' => true
+                    'currency' => 'RUB'
                 ]
             )
-            ->add('image', FileType::class)
+            //->add('image', FileType::class)
             ->add('submit', SubmitType::class);
     }
 }

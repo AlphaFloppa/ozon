@@ -14,11 +14,7 @@ interface ProductQueryServiceInterface
      */
     public function getProductsList(): array;
     
-    public function findProduct(int $id): ?ProductData;
+    public function findProductById(int $id): ?ProductData;
 
     public function getProductImages(int $id): ?array;
-
-    public function createProduct(Product $product): void;
-
-    public function deleteProduct(int $id): void;
 }

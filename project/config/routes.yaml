@@ -15,6 +15,13 @@ createProduct:
     methods: ['GET', 'POST']
     controller: App\Controller\ProductController::createProduct
 
+updateProduct:
+    path: /product/update/{productId}   
+    methods: ['GET', 'POST']
+    controller: App\Controller\ProductController::updateProduct
+    requirements:
+        productId: '\d+'
+
 deleteProduct:
     path: /product/delete/{productId}
     methods: ['GET', 'POST']   #TODO: изменить потом на Only POST, request by js fetch, no window.location

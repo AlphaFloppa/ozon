@@ -21,7 +21,6 @@ class ProductController extends AbstractController
         $this->productAPI = $serviceProvider->getProductAPI();
     }
 
-    //TODO: кнопка удаления на странице товара в твиге 
     public function overview(): Response
     {
         try {
@@ -29,7 +28,7 @@ class ProductController extends AbstractController
             return $this->render(
                 'product_list.html.twig',
                 [
-                    'imagesDirectory' => $this->productAPI->getPublicProductImagesDirectory(),
+                    'imagesDirectory' => 'product_images',
                     'productsData' => $productsData
                 ]
             );
@@ -48,7 +47,7 @@ class ProductController extends AbstractController
             return $this->render(
                 'product_page.html.twig',
                 [
-                    'imagesDirectory' => $this->productAPI->getPublicProductImagesDirectory(),
+                    'imagesDirectory' => 'product_images',
                     'productData' => $productData
                 ]
             );
@@ -67,7 +66,41 @@ class ProductController extends AbstractController
             $form = $this->createForm(CreateProductType::class, $product);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->productAPI->createProduct($product);
+                $this->productAPI->saveProduct($product);
+                return $this->redirectToRoute(
+                    'catalog'
+                );
+            }
+
+            return $this->render(
+                'create_product.html.twig',
+                [
+                    'form' => $form
+                ]
+            );
+        } catch (Throwable $excp) {
+            return new Response(
+                $excp->getMessage(),
+                500
+            );
+        }
+    }
+
+    public function updateProduct(Request $request): Response
+    {
+        try {
+            $id = $request->attributes->get('productId');
+            $productData = $this->productAPI->findProduct($id);
+            $product = new Product(
+                $productData->getId(),
+                $productData->getName(),
+                $productData->getPrice(),
+                $productData->getDescription(),
+            );
+            $form = $this->createForm(CreateProductType::class, $product);
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->productAPI->saveProduct($product);
                 return $this->redirectToRoute(
                     'catalog'
                 );

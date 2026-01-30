@@ -18,10 +18,10 @@ class ProductAPI implements ProductAPIInterface
     )
     {}
 
-    public function getPublicProductImagesDirectory(): string
+    /*public function getPublicProductImagesDirectory(): string
     {
         return $this->repository->getPublicImagesStorageDirectory();
-    }
+    }*/
 
     /**
      * @return ProductData[]
@@ -33,22 +33,16 @@ class ProductAPI implements ProductAPIInterface
 
     public function findProduct(int $id): ?ProductData
     {
-        return $this->queryService->findProduct($id);
+        return $this->queryService->findProductById($id);
     }
 
-    public function createProduct(Product $product): void
+    public function saveProduct(Product $product): void
     {
-        $movedFile = $this->repository->store($product->getImage());
-        $product->setImage($movedFile);
-        $this->queryService->createProduct(
-            $product
-        );
+        $this->repository->store($product);
     }
 
     public function deleteProduct(int $id): void
     {
-        $filename = $this->queryService->getProductImages($id)[0];
-        $this->repository->delete($filename);
-        $this->queryService->deleteProduct($id);
+        $this->repository->delete($id);
     }
 }

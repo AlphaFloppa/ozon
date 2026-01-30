@@ -6,12 +6,10 @@ namespace App\Product\Infrastructure;
 
 use App\Product\App\ProductData;
 use App\Product\App\ProductQueryServiceInterface;
-use App\Product\Domain\Models\Product;
 use App\Product\Infrastructure\Exceptions\DatabaseException;
 use PDO;
 use Throwable;
 
-//прямое взаимодействие с бд
 class ProductQueryService implements ProductQueryServiceInterface
 {
     public function __construct(
@@ -26,7 +24,7 @@ class ProductQueryService implements ProductQueryServiceInterface
             $data['title'],
             floatval($data['price']),
             $data['description'],
-            json_decode($data['images'])[0]
+            'image'//json_decode($data['images'])[0]
         );
     }
 
@@ -68,7 +66,7 @@ class ProductQueryService implements ProductQueryServiceInterface
      * @return ProductData|null
      * @throws DatabaseException
      */
-    public function findProduct(int $id): ?ProductData
+    public function findProductById(int $id): ?ProductData
     {
         $query = <<<SQL
             SELECT * 
@@ -122,69 +120,4 @@ class ProductQueryService implements ProductQueryServiceInterface
         }
     }
 
-    /**
-     * @param Product $product
-     * @return void
-     * @throws DatabaseException
-     */
-    public function createProduct(Product $product): void
-    {
-        $query = <<<SQL
-            INSERT 
-            INTO product
-            (seller_id, title, price, description, images)
-            VALUES
-            (null, :title, :price, :description, :image)
-        SQL;
-        $stmt = $this->pdo->prepare($query);
-        if (!$stmt) {
-            throw new DatabaseException("Query is wrong");
-        }
-        try {
-            if (
-                !$stmt->execute(
-                    [
-                        'title' => $product->getTitle(),
-                        'price' => $product->getPrice(),
-                        'description' => $product->getDescription(),
-                        'image' => json_encode(
-                            [
-                                $product->getImage()->getBasename()
-                            ]
-                        )
-                    ]
-                )
-            ) {
-                throw new DatabaseException("Internal error");
-            }
-        } catch (Throwable $exception) {
-            throw new DatabaseException($exception->getMessage());
-        }
-    }
-
-    public function deleteProduct(int $id): void
-    {
-        $query = <<<SQL
-            DELETE 
-            FROM product
-            WHERE id = (:id) 
-        SQL;
-        $stmt = $this->pdo->prepare($query);
-        if (!$stmt) {
-            throw new DatabaseException("Query is wrong");
-        }
-        try {
-            if (
-                !$stmt->execute(
-                    [
-                        'id' => $id
-                    ]
-                )
-            ) {
-                throw new DatabaseException("Internal error");
-            }
-        } catch (Throwable $exception) {
-            throw new DatabaseException($exception->getMessage());
-        }
-    }
 }

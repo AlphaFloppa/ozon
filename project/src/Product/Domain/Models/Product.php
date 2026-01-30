@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\File\File;
 class Product
 {
     public function __construct(
+        private ?int $id = null,
         private ?string $title = null,
         private ?float $price = null,
         private ?string $description = null,
@@ -18,6 +19,16 @@ class Product
     )
     {
 
+    }
+
+    public function getId(): int | null
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     public function getTitle(): string | null

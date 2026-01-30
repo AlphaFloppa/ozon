@@ -16,7 +16,7 @@ class ProductAPIFactory
     {
         return new ProductAPI(
             new ProductQueryService($connection),
-            new ProductRepository()
+            new ProductRepository($connection)
         );
     }
 }
