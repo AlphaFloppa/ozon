@@ -6,19 +6,17 @@ namespace App\Product\Infrastructure;
 
 use App\Product\API\ProductAPIInterface;
 use App\Product\API\ProductAPI;
-use App\Product\App\ProductQueryServiceInterface;
-use App\Product\App\ProductRepositoryInterface;
+use PDO;
 
 class ProductAPIFactory
 {
     public static function create(
-        ProductQueryServiceInterface $queryService,
-        ProductRepositoryInterface $repository
+        PDO $connection
     ): ProductAPIInterface
     {
         return new ProductAPI(
-            $queryService,
-            $repository
+            new ProductQueryService($connection),
+            new ProductRepository()
         );
     }
 }

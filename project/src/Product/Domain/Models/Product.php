@@ -4,49 +4,67 @@ declare(strict_types=1);
 
 namespace App\Product\Domain\Models;
 
+use App\Product\Domain\Exceptions\PriceException;
+use Symfony\Component\HttpFoundation\File\File;
+
 class Product
 {
     public function __construct(
-        private int $id,
-        private string $name,
-        private float $price,
-        private string $description,
-        private ?string $image,
-        //private string $sellerID 
+        private ?string $title = null,
+        private ?float $price = null,
+        private ?string $description = null,
+        private ?File $image = null,
+        //private string $sellerID
     )
     {
-        $this->validatePrice($price);
+
     }
 
-    public function getId(): int
+    public function getTitle(): string | null
     {
-        return $this->id;
+        return $this->title;
     }
 
-    public function getName(): string
+    public function setTitle(string $title): void
     {
-        return $this->name;
+        $this->title = $title;
     }
 
-    public function getPrice(): float
+    public function getPrice(): float | null
     {
         return $this->price;
     }
 
-    public function getDescription(): string
+    public function setPrice(float $price): void
+    {
+        $this->validatePrice($price);
+        $this->price = $price;
+    }
+
+    public function getDescription(): string | null
     {
         return $this->description;
     }
 
-    public function getImage(): ?string
+    public function setDescription(string $desc): void
+    {
+        $this->description = $desc;
+    }
+
+    public function getImage(): File | null
     {
         return $this->image;
+    }
+
+    public function setImage(File $file): void
+    {
+        $this->image = $file;
     }
 
     private function validatePrice(float $price): void
     {
         if($price < 0){
-            throw new PriceException();
+            throw new PriceException($price);
         }
     }
 }

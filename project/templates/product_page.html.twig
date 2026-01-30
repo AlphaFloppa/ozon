@@ -13,7 +13,7 @@
         {% if productData is not null %}
             <div class="product-page">
                 <div class="left-column">
-                    <img src="/product_images/{{ productData.getImage() }}" class="product-image">
+                    <img src="/{{imagesDirectory}}/{{ productData.getImage() }}" class="product-image">
                     <h1 class="product-title">{{ productData.getName() }}</h1>
                     <div class="product-price">{{ productData.getPrice() }}₽</div>
                 </div>
@@ -24,6 +24,7 @@
                             {{ productData.getDescription() }}
                         </p>
                     </div>
+                    <button onClick = "window.location = `/product/delete/{{productData.getId()}}`">Удалить</button>
                 </div>
             </div>
         {% else %}

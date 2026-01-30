@@ -1,11 +1,23 @@
-overview:
-    path: /overview
+catalog:
+    path: /
     methods: GET
     controller: App\Controller\ProductController::overview
 
-product:
+viewProduct:
     path: /product/{productId}
     methods: GET
     controller: App\Controller\ProductController::getProduct
+    requirements:
+        productId: '\d+'
+
+createProduct:
+    path: /product/create   
+    methods: ['GET', 'POST']
+    controller: App\Controller\ProductController::createProduct
+
+deleteProduct:
+    path: /product/delete/{productId}
+    methods: ['GET', 'POST']   #TODO: изменить потом на Only POST, request by js fetch, no window.location
+    controller: App\Controller\ProductController::deleteProduct
     requirements:
         productId: '\d+'

@@ -1,0 +1,182 @@
+{% extends 'base.html.twig' %}
+    {% block title %}
+        <title>Создание товара</title>
+    {% endblock %}
+    {% block stylesheets %}
+    <style>
+
+    body{
+        height: 100svh;
+        width: 100svw;
+        background-image: linear-gradient(#000000, #00002b);
+        box-sizing: border-box;
+        margin: 0;
+    }
+/* Основные стили формы */
+form{
+    max-width: 600px;
+    margin: auto;
+    padding: 1.8rem;
+    background: #f7e9e9;
+    border-radius: 12px;
+    box-shadow: 0 4px 30px rgb(199, 4, 52);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Заголовок формы (если добавите) */
+.form-title{
+    text-align: center;
+    margin: 0 0 1.5rem 0;
+    color: #2c3e50;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+/* Контейнер формы */
+form > div {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+/* Стили для label */
+form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #34495e;
+    font-size: 0.95rem;
+}
+
+/* Звездочка для обязательных полей */
+label.required:after {
+    content: " *";
+    color: #e74c3c;
+}
+
+/* Общие стили для input */
+input{
+    width: 100%;
+    padding: 0.75rem 1rem;
+    outline: 3px solid #0808082f;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    background: #fafafab6;
+}
+
+/* Стили для текстовых полей */
+input[type = "text"]{
+    color: #2c3e50;
+}
+
+/* Фокус состояния */
+input:focus{
+    outline: none;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* Специальный контейнер для поля с валютой */
+.price-container{
+    position: relative;
+}
+
+.image-container/* Стили для файлового поля */
+ {
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.image-container input::file-selector-button {
+    padding: 0.5rem 1rem;
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    color: #34495e;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 1rem;
+}
+
+.image-container input::file-selector-button:hover {
+    background: #e9ecef;
+    border-color: #bdc3c7;
+}
+
+/* Стили кнопки submit */
+.submit {
+    width: 100%;
+    padding: 0.9rem;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.5px;
+    margin-top: 0.5rem;
+}
+
+.submit:hover {
+    background: linear-gradient(135deg, #2980b9, #2573a7);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.25);
+}
+
+.submit:active {
+    transform: translateY(0);
+}
+
+.container ul{
+    color: #e74c3c;
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-top: 0.3rem;
+}
+
+</style>
+    {% endblock %}
+    {% block body %}
+        {{form_start(form)}}
+
+            <div class = "form-title">Добавление товара</div>
+            <div class = "title-container container">
+                {{form_label(form.title)}}
+                {{form_widget(form.title)}}
+                {{form_errors(form.title)}}
+            </div>
+
+            <div class = "description-container container">
+                {{form_label(form.description)}}
+                {{form_widget(form.description)}}
+                {{form_errors(form.description)}}
+            </div>
+
+            <div class = "price-container container">
+                {{form_label(form.price)}}
+                {{form_widget(form.price)}}
+                {{form_errors(form.price)}}
+            </div>
+
+            <div class = "image-container container">
+                {{form_label(form.image)}}
+                {{form_widget(form.image)}}
+                {{form_errors(form.image)}}  
+            </div>
+
+            {{form_row(form.submit,
+                {
+                    'attr': {
+                        'class': 'submit'
+                    }
+                }
+            )}}
+
+            {{form_rest(form)}}
+
+        {{form_end(form)}}
+    {% endblock %}

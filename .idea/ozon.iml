@@ -53,6 +53,15 @@
       <excludeFolder url="file://$MODULE_DIR$/project/vendor/symfony/var-exporter" />
       <excludeFolder url="file://$MODULE_DIR$/project/vendor/symfony/yaml" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/project/vendor/symfony/form" />
+      <excludeFolder url="file://$MODULE_DIR$/project/vendor/symfony/options-resolver" />
+      <excludeFolder url="file://$MODULE_DIR$/project/vendor/symfony/polyfill-intl-icu" />
+      <excludeFolder url="file://$MODULE_DIR$/project/vendor/symfony/property-access" />
+      <excludeFolder url="file://$MODULE_DIR$/project/vendor/symfony/property-info" />
+      <excludeFolder url="file://$MODULE_DIR$/project/vendor/symfony/translation-contracts" />
+      <excludeFolder url="file://$MODULE_DIR$/project/vendor/symfony/twig-bridge" />
+      <excludeFolder url="file://$MODULE_DIR$/project/vendor/symfony/twig-bundle" />
+      <excludeFolder url="file://$MODULE_DIR$/project/vendor/twig/twig" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

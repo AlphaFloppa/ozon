@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Product\App;
 
 use App\Product\App\ProductData;
+use App\Product\Domain\Models\Product;
 
 interface ProductQueryServiceInterface
 {
@@ -12,6 +13,12 @@ interface ProductQueryServiceInterface
      * @return ProductData[]
      */
     public function getProductsList(): array;
-
+    
     public function findProduct(int $id): ?ProductData;
+
+    public function getProductImages(int $id): ?array;
+
+    public function createProduct(Product $product): void;
+
+    public function deleteProduct(int $id): void;
 }

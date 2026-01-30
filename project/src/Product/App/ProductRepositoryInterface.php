@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Product\App;
 
-use App\Product\App\ProductData;
-use App\Product\Domain\Product;
+use Symfony\Component\HttpFoundation\File\File;
 
 interface ProductRepositoryInterface
 {
-    public function findProduct(int $id): ProductData;
 
-    public function store(ProductData $data): void;
+    public function getPublicImagesStorageDirectory(): string;
+    
+    public function store(File $file): File;
 
-    public function delete(int $id): void;
+    public function delete(string $filename): void;
 }

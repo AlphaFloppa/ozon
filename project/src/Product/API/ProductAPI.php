@@ -8,6 +8,7 @@ use App\Product\API\ProductAPIInterface;
 use App\Product\App\ProductData;
 use App\Product\App\ProductQueryServiceInterface;
 use App\Product\App\ProductRepositoryInterface;
+use App\Product\Domain\Models\Product;
 
 class ProductAPI implements ProductAPIInterface
 {
@@ -16,6 +17,11 @@ class ProductAPI implements ProductAPIInterface
         private readonly ProductRepositoryInterface $repository,
     )
     {}
+
+    public function getPublicProductImagesDirectory(): string
+    {
+        return $this->repository->getPublicImagesStorageDirectory();
+    }
 
     /**
      * @return ProductData[]
@@ -28,5 +34,21 @@ class ProductAPI implements ProductAPIInterface
     public function findProduct(int $id): ?ProductData
     {
         return $this->queryService->findProduct($id);
+    }
+
+    public function createProduct(Product $product): void
+    {
+        $movedFile = $this->repository->store($product->getImage());
+        $product->setImage($movedFile);
+        $this->queryService->createProduct(
+            $product
+        );
+    }
+
+    public function deleteProduct(int $id): void
+    {
+        $filename = $this->queryService->getProductImages($id)[0];
+        $this->repository->delete($filename);
+        $this->queryService->deleteProduct($id);
     }
 }

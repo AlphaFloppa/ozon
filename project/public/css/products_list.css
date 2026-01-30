@@ -21,11 +21,18 @@ body {
 }
 
 .product-card {
+    padding: 0.8rem;
     width: 250px;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 14px rgba(0,0,0,0.6);
     overflow: hidden;
+    cursor: pointer;
+    transition: 0.3s all ease;
+}
+
+.product-card:hover{
+    transform: translateY(-7px) scale(1.015);
 }
 
 .product-image {
@@ -48,4 +55,10 @@ body {
     font-weight: bold;
     color: #e53935;
     margin: 0 12px 12px;
+}
+
+.empty-catalog-warning{
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 600;
 }
