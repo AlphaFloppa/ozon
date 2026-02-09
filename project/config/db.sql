@@ -17,6 +17,7 @@ CREATE TABLE product (
     price DECIMAL(10, 2),
     description VARCHAR(200),
     images JSON,
+    deleted_at TIMESTAMP DEFAULT NULL,
     FOREIGN KEY (seller_id) REFERENCES user(id) ON DELETE CASCADE
 );
 

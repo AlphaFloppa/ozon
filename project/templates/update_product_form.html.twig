@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+    {% block title %}
+        <title>Создание продукта</title>
+    {% endblock %}
+    {% block stylesheets %}
+    {% endblock %}
+    {% block javascripts %}
+    {% endblock %}
+    {% block body %}
+        <form method = 'POST' enctype = 'multipart/form-data'>
+        <label>
+            Title
+            <input type = 'text' name = 'title' value = '{{productData is not null ? productData['title'] | e}}'/>
+        </label>
+
+        <label>
+            Price, RUB
+            <input type = 'number' name = 'price' value = '{{productData is not null ? productData['price'] | e}}'/>
+        </label>
+
+        <label>
+            Description
+            <input type = 'text' name = 'description' value = '{{productData is not null ? productData['description'] | e}}'/>
+        </label>
+
+        <img src = '/product_images/actual/{{productData is not null ? productData['image']}}' />
+
+        <label>
+            Image
+            <input type = 'file' name = 'image'/>
+        </label>    
+
+        <button type = 'submit'>
+            Отправить
+        </button>
+    </form>
+    {% endblock %}

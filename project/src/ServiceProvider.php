@@ -6,7 +6,7 @@ namespace App;
 
 use App\Common\Infrastructure\ConnectionProvider;
 use App\Product\API\ProductAPIInterface;
-use App\Product\Infrastructure\ProductAPIFactory;
+use App\Product\Infrastructure\Factory\ProductAPIFactory;
 
 class ServiceProvider
 {
@@ -17,8 +17,7 @@ class ServiceProvider
 
     public function getProductAPI(): ProductAPIInterface
     {
-        return ProductAPIFactory::create(
-            $this->provider->getConnectionToDb()
-        );
+        $pdo = $this->provider->getConnectionToDb();
+        return ProductAPIFactory::create($pdo);
     }
 }

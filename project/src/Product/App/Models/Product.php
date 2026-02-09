@@ -2,27 +2,31 @@
 
 declare(strict_types=1);
 
-namespace App\Product\App;
+namespace App\Product\App\Models;
 
-class ProductData
+use Symfony\Component\HttpFoundation\File\File;
+
+class Product
 {
     public function __construct(
-        private int $id,
-        private string $name,
+        private ?int $id = null,
+        private string $title,
         private float $price,
         private string $description,
-        private ?string $image,
+        private File $image,
+        //private string $sellerID
     )
-    {}
+    {
+    }
 
-    public function getId(): int
+    public function getId(): int | null
     {
         return $this->id;
     }
 
-    public function getName(): string
+    public function getTitle(): string
     {
-        return $this->name;
+        return $this->title;
     }
 
     public function getPrice(): float
@@ -35,7 +39,7 @@ class ProductData
         return $this->description;
     }
 
-    public function getImage(): ?string
+    public function getImage(): File
     {
         return $this->image;
     }

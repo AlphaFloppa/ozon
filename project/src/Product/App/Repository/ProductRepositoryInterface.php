@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Product\App;
+namespace App\Product\App\Repository;
 
-use App\Product\Domain\Models\Product;
+use App\Product\App\Models\Product;
 
 interface ProductRepositoryInterface
 {

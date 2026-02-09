@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Product\API\ProductAPIInterface;
-use App\Product\Domain\Models\Product;
-use App\Product\Infrastructure\Forms\CreateProductType;
+use App\Product\App\Models\Product;
 use App\ServiceProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
+use Symfony\Component\HttpFoundation\File\File;
 
 class ProductController extends AbstractController
 {
@@ -24,12 +26,15 @@ class ProductController extends AbstractController
     public function overview(): Response
     {
         try {
-            $productsData = $this->productAPI->getProductsList();
+            $productsData = $this->productAPI->getProductList();
             return $this->render(
                 'product_list.html.twig',
                 [
-                    'imagesDirectory' => 'product_images',
-                    'productsData' => $productsData
+                    'productsData' => array_map(
+                        fn($productData) => $productData,
+                        $productsData
+                    ),
+                    'imagesDirectory' => 'product_images/actual'
                 ]
             );
         } catch (Throwable $excp) {
@@ -47,7 +52,7 @@ class ProductController extends AbstractController
             return $this->render(
                 'product_page.html.twig',
                 [
-                    'imagesDirectory' => 'product_images',
+                    'imagesDirectory' => 'product_images/actual',
                     'productData' => $productData
                 ]
             );
@@ -59,65 +64,57 @@ class ProductController extends AbstractController
         }
     }
 
+    public function createProductView(Request $request): Response
+    {
+        return $this->render(
+            'create_product_form.html.twig',
+            [
+                'imagesDirectory' => 'product_images/actual',
+                'productData' => null
+            ]
+        );
+    }
+
     public function createProduct(Request $request): Response
     {
-        try {
-            $product = new Product();
-            $form = $this->createForm(CreateProductType::class, $product);
-            $form->handleRequest($request);
-            if ($form->isSubmitted() && $form->isValid()) {
-                $this->productAPI->saveProduct($product);
-                return $this->redirectToRoute(
-                    'catalog'
-                );
-            }
+        $product = new Product(
+            null,
+            $request->get('title'),
+            (float) $request->get('price'),
+            $request->get('description'),
+            $request->files->get('image')
+        );
+        $this->productAPI->saveProduct($product);
+        return $this->redirectToRoute('catalog');
+    }
 
-            return $this->render(
-                'create_product.html.twig',
-                [
-                    'form' => $form
-                ]
-            );
-        } catch (Throwable $excp) {
-            return new Response(
-                $excp->getMessage(),
-                500
-            );
-        }
+    public function updateProductView(int $productId): Response
+    {
+        $productData = $this->productAPI->findProduct($productId);
+        return $this->render(
+            'update_product_form.html.twig',
+            [
+                'imagesDirectory' => 'product_images/actual',
+                'productData' => $productData
+            ]
+        );
     }
 
     public function updateProduct(Request $request): Response
     {
-        try {
-            $id = $request->attributes->get('productId');
-            $productData = $this->productAPI->findProduct($id);
-            $product = new Product(
-                $productData->getId(),
-                $productData->getName(),
-                $productData->getPrice(),
-                $productData->getDescription(),
-            );
-            $form = $this->createForm(CreateProductType::class, $product);
-            $form->handleRequest($request);
-            if ($form->isSubmitted() && $form->isValid()) {
-                $this->productAPI->saveProduct($product);
-                return $this->redirectToRoute(
-                    'catalog'
-                );
-            }
-
-            return $this->render(
-                'create_product.html.twig',
-                [
-                    'form' => $form
-                ]
-            );
-        } catch (Throwable $excp) {
-            return new Response(
-                $excp->getMessage(),
-                500
-            );
-        }
+        $id = (int) $request->attributes->get('productId');
+        $deprecatedProductVersion = $this->productAPI->findProduct($id);
+        $product = new Product(
+            $id,
+            $request->get('title'),
+            (float) $request->get('price'),
+            $request->get('description'),
+            $request->files->get('image') ?? new File(
+                __DIR__ . '/../../public/product_images/actual' . $deprecatedProductVersion['image']
+            )
+        );
+        $this->productAPI->updateProduct($product);
+        return $this->redirectToRoute('catalog');
     }
 
     public function deleteProduct(int $productId): Response

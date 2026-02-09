@@ -10,14 +10,26 @@ viewProduct:
     requirements:
         productId: '\d+'
 
-createProduct:
+createProductView:
     path: /product/create   
-    methods: ['GET', 'POST']
+    methods: 'GET'
+    controller: App\Controller\ProductController::createProductView
+
+createProduct:
+    path: /product/create
+    methods: 'POST'
     controller: App\Controller\ProductController::createProduct
 
-updateProduct:
+updateProductView:
     path: /product/update/{productId}   
-    methods: ['GET', 'POST']
+    methods: 'GET'
+    controller: App\Controller\ProductController::updateProductView
+    requirements:
+        productId: '\d+'
+
+updateProduct:
+    path: /product/update/{productId}
+    methods: 'POST'
     controller: App\Controller\ProductController::updateProduct
     requirements:
         productId: '\d+'

@@ -8,10 +8,10 @@
     {% block body %}
         <div class="cards-container">
             {% for productData in productsData %}
-                <div class="product-card" onClick = "window.location = '/product/{{productData.getId()}}'">
-                    <img src = "/{{imagesDirectory}}/{{ productData.getImage() }}" alt = "smth went wrong" class = "product-image">
-                    <div class="product-title">{{ productData.getName() }}</div>
-                    <div class="product-price">{{ productData.getPrice() }}₽</div>
+                <div class="product-card" onClick = "window.location = '/product/{{productData['id']}}'">
+                    <img src = "/product_images/actual/{{productData['image']}}" alt = "smth went wrong" class = "product-image">
+                    <div class="product-title">{{ productData['title'] }}</div>
+                    <div class="product-price">{{ productData['price'] }}₽</div>
                 </div>
             {% endfor %}
             {% if productsData is empty %}

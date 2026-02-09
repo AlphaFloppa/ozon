@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Product\Infrastructure;
+namespace App\Product\Infrastructure\Query;
 
-use App\Product\App\ProductData;
-use App\Product\App\ProductQueryServiceInterface;
+use App\Product\App\Query\ProductQueryServiceInterface;
 use App\Product\Infrastructure\Exceptions\DatabaseException;
 use PDO;
 use Throwable;
@@ -17,19 +16,7 @@ class ProductQueryService implements ProductQueryServiceInterface
     )
     {}
 
-    private function hydrateProductData(array $data): ProductData
-    {
-        return new ProductData(
-            $data['id'],
-            $data['title'],
-            floatval($data['price']),
-            $data['description'],
-            'image'//json_decode($data['images'])[0]
-        );
-    }
-
     /**
-     * @return ProductData[]
      * @throws DatabaseException
      */
     public function getProductsList(): array
@@ -37,6 +24,7 @@ class ProductQueryService implements ProductQueryServiceInterface
         $query = <<<SQL
             SELECT * 
             FROM product
+            WHERE deleted_at IS NULL
             ORDER BY title ASC
         SQL;
         $stmt = $this->pdo->prepare($query);
@@ -47,10 +35,7 @@ class ProductQueryService implements ProductQueryServiceInterface
             if ($stmt->execute()) {
                 $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 return array_map(
-                    function($record)
-                    {
-                        return $this->hydrateProductData($record);
-                    },
+                    fn($record) => $this->hydrateProductData($record),
                     $data
                 );
             } else {
@@ -63,15 +48,15 @@ class ProductQueryService implements ProductQueryServiceInterface
 
     /**
      * @param int $id
-     * @return ProductData|null
+     * @return array|null
      * @throws DatabaseException
      */
-    public function findProductById(int $id): ?ProductData
+    public function findProductById(int $id): ?array
     {
         $query = <<<SQL
             SELECT * 
             FROM product
-            WHERE id = :id
+            WHERE id = :id AND deleted_at IS NULL
         SQL;
         $stmt = $this->pdo->prepare($query);
         if (!$stmt) {
@@ -93,31 +78,15 @@ class ProductQueryService implements ProductQueryServiceInterface
         }
     }
 
-    public function getProductImages(int $id): ?array
+    private function hydrateProductData(array $data): array
     {
-        $query = <<<SQL
-            SELECT images 
-            FROM product
-            WHERE id = (:id)
-        SQL;
-        $stmt = $this->pdo->prepare($query);
-        if (!$stmt) {
-            throw new DatabaseException("Query is wrong");
-        }
-        try {
-            if ($stmt->execute(['id' => $id])) {
-                $data = $stmt->fetch(PDO::FETCH_COLUMN);
-                if ($data) {
-                    return json_decode($data);
-                } else {
-                    return null;                //не найдено такого
-                }
-            } else {
-                throw new DatabaseException("Internal error");
-            }
-        } catch (Throwable $exception) {
-            throw new DatabaseException($exception->getMessage());
-        }
+        return [
+            'id' => $data['id'],
+            'title' => $data['title'],
+            'price' => floatval($data['price']),
+            'description' => $data['description'],
+            'image' => json_decode($data['images'])[0]
+        ];
     }
 
 }
