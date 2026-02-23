@@ -1,9 +1,14 @@
 {% extends 'base.html.twig' %}
+
     {% block title %}
         {% if productData is not null %}
-            <title>{{ productData['title'] }}</title>
+            <title>
+                {{ productData['title'] }}
+            </title>
         {% else %}
-            <title>Товар не найден</title>
+            <title>
+                Товар не найден
+            </title>
         {% endif %}
     {% endblock %}
     {% block stylesheets %}
@@ -14,20 +19,32 @@
             <div class="product-page">
                 <div class="left-column">
                     <img src="/product_images/actual/{{productData['image']}}" class="product-image">
-                    <h1 class="product-title">{{ productData['title'] }}</h1>
-                    <div class="product-price">{{ productData['price'] }}₽</div>
+                    <h1 class="product-title">
+                        {{ productData['title'] }}
+                    </h1>
+                    <div class="product-price">
+                        {{ productData['price'] }}₽
+                    </div>
                 </div>
                 <div class="right-column">
-                    <h2 class="description-title">Описание товара</h2>
+                    <h2 class="description-title">
+                        Описание товара
+                    </h2>
                     <div class="product-description">
                         <p class="description-text">
                             {{ productData['description'] }}
                         </p>
                     </div>
-                    <button onClick = "window.location = `/product/delete/{{productData['id']}}`">Удалить</button>
+                    {% if not isReadonly %}
+                        <button onClick = "window.location = `/product/delete/{{productData['id']}}`">
+                            Удалить
+                        </button>
+                    {% endif %}
                 </div>
             </div>
         {% else %}
-            <p>Товар не найден</p>
+            <p>
+                Товар не найден
+            </p>
         {% endif %}
     {% endblock %}

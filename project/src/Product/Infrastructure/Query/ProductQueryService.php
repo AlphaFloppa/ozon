@@ -83,9 +83,10 @@ class ProductQueryService implements ProductQueryServiceInterface
         return [
             'id' => $data['id'],
             'title' => $data['title'],
-            'price' => floatval($data['price']),
+            'price' => (float) $data['price'],
             'description' => $data['description'],
-            'image' => json_decode($data['images'])[0]
+            'image' => json_decode($data['images'])[0],
+            'seller_id' => (string) $data['seller_id']
         ];
     }
 

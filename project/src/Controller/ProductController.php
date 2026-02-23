@@ -10,7 +10,7 @@ use App\ServiceProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Throwable;
+use App\User\API\UserAPI;
 use Symfony\Component\HttpFoundation\File\File;
 
 class ProductController extends AbstractController
@@ -25,43 +25,30 @@ class ProductController extends AbstractController
 
     public function overview(): Response
     {
-        try {
-            $productsData = $this->productAPI->getProductList();
-            return $this->render(
-                'product_list.html.twig',
-                [
-                    'productsData' => array_map(
-                        fn($productData) => $productData,
-                        $productsData
-                    ),
-                    'imagesDirectory' => 'product_images/actual'
-                ]
-            );
-        } catch (Throwable $excp) {
-            return new Response(
-                $excp->getMessage(),
-                500
-            );
-        }
+        $productsData = $this->productAPI->getProductList();
+        return $this->render(
+            'product_list.html.twig',
+            [
+                'productsData' => $productsData,
+                'imagesDirectory' => 'product_images/actual'
+            ]
+        );
     }
 
     public function getProduct(int $productId): Response
     {
-        try {
-            $productData = $this->productAPI->findProduct($productId);
-            return $this->render(
-                'product_page.html.twig',
-                [
-                    'imagesDirectory' => 'product_images/actual',
-                    'productData' => $productData
-                ]
-            );
-        } catch (Throwable $excp) {
-            return new Response(
-                $excp->getMessage(),
-                500
-            );
-        }
+        $currentUser = $this->getUser();
+        $productData = $this->productAPI->findProduct($productId);
+        $isReadonly = !UserAPI::isUserCreatorOf($currentUser, $productData) &&
+            !$this->isGranted('ROLE_ADMIN');
+        return $this->render(
+            'product_page.html.twig',
+            [
+                'imagesDirectory' => 'product_images/actual',
+                'productData' => $productData,
+                'isReadonly' => $isReadonly
+            ]
+        );
     }
 
     public function createProductView(Request $request): Response
@@ -77,12 +64,14 @@ class ProductController extends AbstractController
 
     public function createProduct(Request $request): Response
     {
+        $sellerId = $this->getUser()->getUserIdentifier();
         $product = new Product(
             null,
             $request->get('title'),
             (float) $request->get('price'),
             $request->get('description'),
-            $request->files->get('image')
+            $request->files->get('image'),
+            (string) $sellerId
         );
         $this->productAPI->saveProduct($product);
         return $this->redirectToRoute('catalog');
@@ -91,6 +80,16 @@ class ProductController extends AbstractController
     public function updateProductView(int $productId): Response
     {
         $productData = $this->productAPI->findProduct($productId);
+        if ($productData === null) {
+            return new Response('', Response::HTTP_NOT_FOUND);
+        }
+        $currentUser = $this->getUser();
+        if (
+            !UserAPI::isUserCreatorOf($currentUser, $productData) &&
+            !$this->isGranted('ROLE_ADMIN')
+        ) {
+            return new Response('', Response::HTTP_FORBIDDEN);
+        }
         return $this->render(
             'update_product_form.html.twig',
             [
@@ -102,16 +101,27 @@ class ProductController extends AbstractController
 
     public function updateProduct(Request $request): Response
     {
-        $id = (int) $request->attributes->get('productId');
-        $deprecatedProductVersion = $this->productAPI->findProduct($id);
+        $productId = (int) $request->attributes->get('productId');
+        $actualProductVersion = $this->productAPI->findProduct($productId);
+        if ($actualProductVersion === null) {
+            return new Response('', Response::HTTP_NOT_FOUND);
+        }
+        $currentUser = $this->getUser();
+        if (
+            !UserAPI::isUserCreatorOf($currentUser, $actualProductVersion) &&
+            !$this->isGranted('ROLE_ADMIN')
+        ) {
+            return new Response('', Response::HTTP_FORBIDDEN);
+        }
         $product = new Product(
-            $id,
+            $productId,
             $request->get('title'),
             (float) $request->get('price'),
             $request->get('description'),
             $request->files->get('image') ?? new File(
-                __DIR__ . '/../../public/product_images/actual' . $deprecatedProductVersion['image']
-            )
+                __DIR__ . '/../../public/product_images/actual/' . $actualProductVersion['image']
+            ),
+            $actualProductVersion['seller_id']
         );
         $this->productAPI->updateProduct($product);
         return $this->redirectToRoute('catalog');
@@ -119,16 +129,20 @@ class ProductController extends AbstractController
 
     public function deleteProduct(int $productId): Response
     {
-        try {
-            $this->productAPI->deleteProduct($productId);
-            return $this->redirectToRoute(
-                'catalog'
-            );
-        } catch (Throwable $excp) {
-            return new Response(
-                $excp->getMessage(),
-                500
-            );
+        $productData = $this->productAPI->findProduct($productId);
+        if (!$productData) {
+            return new Response('', Response::HTTP_NOT_FOUND);
         }
+        $currentUser = $this->getUser();
+        if (
+            !UserAPI::isUserCreatorOf($currentUser, $productData) &&
+            !$this->isGranted('ROLE_ADMIN')
+        ) {
+            return new Response('', Response::HTTP_FORBIDDEN);
+        }
+        $this->productAPI->deleteProduct($productId);
+        return $this->redirectToRoute(
+            'catalog'
+        );
     }
 }

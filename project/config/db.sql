@@ -6,7 +6,7 @@ CREATE TABLE user (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) UNIQUE,
     password_hash VARCHAR(255),
-    role ENUM('customer', 'seller', 'admin'),
+    role ENUM('CUSTOMER', 'SELLER', 'ADMIN'),
     balance DECIMAL(10, 2) DEFAULT 0.00
 );
 

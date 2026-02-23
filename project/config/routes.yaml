@@ -40,3 +40,27 @@ deleteProduct:
     controller: App\Controller\ProductController::deleteProduct
     requirements:
         productId: '\d+'
+
+loginView:
+    path: /login
+    methods: 'GET'
+    controller: App\Controller\LoginController::index
+
+login:
+    path: /login
+    methods: 'POST'
+
+registerView:
+    path: /register
+    methods: 'GET'
+    controller: App\Controller\RegisterController::index
+
+register:
+    path: /register
+    methods: 'POST'
+    controller: App\Controller\RegisterController::register
+
+profile:
+    path: /profile
+    methods: 'GET'
+    controller: App\Controller\UserController::profile

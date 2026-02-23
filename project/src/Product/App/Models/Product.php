@@ -14,12 +14,11 @@ class Product
         private float $price,
         private string $description,
         private File $image,
-        //private string $sellerID
-    )
-    {
+        private string $sellerId
+    ) {
     }
 
-    public function getId(): int | null
+    public function getId(): int|null
     {
         return $this->id;
     }
@@ -42,5 +41,10 @@ class Product
     public function getImage(): File
     {
         return $this->image;
+    }
+
+    public function getSellerId(): string
+    {
+        return $this->sellerId;
     }
 }

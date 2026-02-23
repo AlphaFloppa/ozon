@@ -32,7 +32,7 @@ class ProductRepository implements ProductRepositoryInterface
             INTO product
             (seller_id, title, price, description, images)
             VALUES
-            (null, :title, :price, :description, :image)
+            (:seller_id, :title, :price, :description, :image)
         SQL;                //под создание нового
         $stmt = $this->pdo->prepare($query);
         if (!$stmt) {
@@ -43,6 +43,7 @@ class ProductRepository implements ProductRepositoryInterface
                 !$stmt->execute(
                     [
                         ...($id ? ['id' => $product->getId()] : []),
+                        ...($id ? [] : ['seller_id' => $product->getSellerId()]),
                         'title' => $product->getTitle(),
                         'price' => $product->getPrice(),
                         'description' => $product->getDescription(),

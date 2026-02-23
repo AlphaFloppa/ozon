@@ -39,7 +39,8 @@ class ProductAPI implements ProductAPIInterface
             $product->getTitle(),
             $product->getPrice(),
             $product->getDescription(),
-            $newFile
+            $newFile,
+            $product->getSellerId()
         );
         $this->productService->create($newProduct);
     }
@@ -58,7 +59,8 @@ class ProductAPI implements ProductAPIInterface
             $product->getTitle(),
             $product->getPrice(),
             $product->getDescription(),
-            $newFile
+            $newFile,
+            $product->getSellerId()
         );
         $this->productService->update($newProduct);
     }
