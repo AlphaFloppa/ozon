@@ -1,1 +1,17 @@
-<h1>{{app.user.getEmail()}}</h1>
+{% extends 'base.html.twig' %}
+
+    {% block meta %}
+        <meta name = 'csrf-token' content = '{{csrf_token('logout')}}' />
+    {% endblock %}
+    {% block title %}
+        <title>Личный кабинет</title>
+    {% endblock %}
+    {% block scripts %}
+        <script src = 'js/profile/index.js'></script>
+    {% endblock %}
+    {% block body %}
+        <h1>
+            {{app.user.getEmail()}}
+        </h1>
+        <button class = "logout_button">Выйти</button>
+    {% endblock %}

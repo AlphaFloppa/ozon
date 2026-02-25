@@ -9,9 +9,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
-class LoginController extends AbstractController
+class AuthController extends AbstractController
 {
-    public function index(Request $request, AuthenticationUtils $utils): Response
+    public function login(Request $request, AuthenticationUtils $utils): Response
     {
         $error = $utils->getLastAuthenticationError();
         $lastEmail = $utils->getLastUsername();
@@ -23,5 +23,14 @@ class LoginController extends AbstractController
                 'error' => $error,
             ]
         );
+    }
+
+    public function logout(): void
+    {
+        /*return $this->json(
+            [
+                'redirectURL' => $this->generateUrl('loginView')
+            ]
+        );*/
     }
 }

@@ -44,10 +44,14 @@ deleteProduct:
 loginView:
     path: /login
     methods: 'GET'
-    controller: App\Controller\LoginController::index
+    controller: App\Controller\AuthController::login
 
 login:
     path: /login
+    methods: 'POST'
+
+logout: 
+    path: /logout
     methods: 'POST'
 
 registerView:
