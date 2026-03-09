@@ -1,5 +1,7 @@
 {
     "name": "user/ozon",
     "type": "project",
-    "require": {}
+    "require": {
+      "ext-pdo": "*"
+    }
 }

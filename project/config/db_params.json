@@ -1,0 +1,5 @@
+{
+    "dsn": "mysql:host=localhost;dbname=order_service",
+    "userLogin": "root", 
+    "userPassword": "Random_rnd=new_Random(100);"
+}

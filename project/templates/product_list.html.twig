@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+    {% block title %}
+        <title>Каталог товаров</title>
+    {% endblock %}
+    {% block stylesheets%}
+        <link rel = "stylesheet" href = "/css/products_list.css" />
+    {% endblock %}
+    {% block body %}
+        <div class="cards-container">
+            {% for productData in productsData %}
+                <div class="product-card" onClick = "window.location = '/product/{{productData['id']}}'">
+                    <img src = "/product_images/actual/{{productData['image']}}" alt = "smth went wrong" class = "product-image">
+                    <div class="product-title">{{ productData['title'] }}</div>
+                    <div class="product-price">{{ productData['price'] }}₽</div>
+                </div>
+            {% endfor %}
+            {% if productsData is empty %}
+                <span class = "empty-catalog-warning">Товаров нет</span>
+            {% endif %}
+        </div>
+    {% endblock %}
