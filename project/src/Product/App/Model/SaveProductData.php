@@ -2,26 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Product\App\Models;
+namespace App\Product\App\Model;
 
 use Symfony\Component\HttpFoundation\File\File;
 
-class Product
+class SaveProductData
 {
     public function __construct(
-        private ?int $id = null,
         private string $title,
         private float $price,
         private string $description,
-        private File $image,
-        //private string $sellerID
+        private File $image
     )
     {
-    }
-
-    public function getId(): int | null
-    {
-        return $this->id;
     }
 
     public function getTitle(): string

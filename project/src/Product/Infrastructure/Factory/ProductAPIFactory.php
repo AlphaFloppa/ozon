@@ -1,14 +1,15 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace App\Product\Infrastructure\Factory;
 
-use App\Product\API\ProductAPIInterface;
 use App\Product\API\ProductAPI;
+use App\Product\API\ProductAPIInterface;
 use App\Product\Infrastructure\Query\ProductQueryService;
-use App\Product\Infrastructure\Services\ImageService;
-use App\Product\Infrastructure\Services\ProductService;
+use App\Product\Infrastructure\Repository\ProductRepository;
+use App\Product\Infrastructure\Service\ImageService;
+use App\Product\Infrastructure\Service\ProductService;
 use PDO;
 
 class ProductAPIFactory
@@ -19,8 +20,10 @@ class ProductAPIFactory
     {
         return new ProductAPI(
             new ProductQueryService($connection),
-            new ProductService($connection),
-            new ImageService()
+            new ProductService(
+                new ProductRepository($connection),
+                new ImageService()
+            )
         );
     }
 }
