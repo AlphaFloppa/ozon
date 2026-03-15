@@ -1,72 +1,42 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace App\Controller;
 
 use App\Product\API\ProductAPIInterface;
-use App\Product\App\Models\Product;
+use App\Product\App\Model\Product;
+use App\Product\App\Model\SaveProductData;
 use App\ServiceProvider;
+use App\User\API\UserAPI;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\User\API\UserAPI;
-use Symfony\Component\HttpFoundation\File\File;
 
 class ProductController extends AbstractController
 {
     private ProductAPIInterface $productAPI;
 
+    /**
+     * @param ServiceProvider $serviceProvider
+     */
     public function __construct(
         ServiceProvider $serviceProvider
-    ) {
+    )
+    {
         $this->productAPI = $serviceProvider->getProductAPI();
     }
 
-    public function overview(): Response
-    {
-        $productsData = $this->productAPI->getProductList();
-        return $this->render(
-            'product_list.html.twig',
-            [
-                'productsData' => $productsData,
-                'imagesDirectory' => 'product_images/actual'
-            ]
-        );
-    }
-
-    public function getProduct(int $productId): Response
-    {
-        $currentUser = $this->getUser();
-        $productData = $this->productAPI->findProduct($productId);
-        $isReadonly = !UserAPI::isUserCreatorOf($currentUser, $productData) &&
-            !$this->isGranted('ROLE_ADMIN');
-        return $this->render(
-            'product_page.html.twig',
-            [
-                'imagesDirectory' => 'product_images/actual',
-                'productData' => $productData,
-                'isReadonly' => $isReadonly
-            ]
-        );
-    }
-
-    public function createProductView(Request $request): Response
-    {
-        return $this->render(
-            'create_product_form.html.twig',
-            [
-                'imagesDirectory' => 'product_images/actual',
-                'productData' => null
-            ]
-        );
-    }
-
+    /**
+     * @param Request $request данные формы создания
+     * @return Response redirect на страницу каталога
+     */
     public function createProduct(Request $request): Response
     {
         $sellerId = $this->getUser()->getUserIdentifier();
-        $product = new Product(
-            null,
+
+        $product = new SaveProductData(
             $request->get('title'),
             (float) $request->get('price'),
             $request->get('description'),
@@ -74,43 +44,105 @@ class ProductController extends AbstractController
             (string) $sellerId
         );
         $this->productAPI->saveProduct($product);
+
         return $this->redirectToRoute('catalog');
     }
 
-    public function updateProductView(int $productId): Response
+    /**
+     * @return Response html форма создания
+     */
+    public function createProductView(Request $request): Response
     {
-        $productData = $this->productAPI->findProduct($productId);
-        if ($productData === null) {
-            return new Response('', Response::HTTP_NOT_FOUND);
-        }
-        $currentUser = $this->getUser();
-        if (
-            !UserAPI::isUserCreatorOf($currentUser, $productData) &&
-            !$this->isGranted('ROLE_ADMIN')
-        ) {
-            return new Response('', Response::HTTP_FORBIDDEN);
-        }
         return $this->render(
-            'update_product_form.html.twig',
+            'create_product_form.html.twig',
             [
                 'imagesDirectory' => 'product_images/actual',
-                'productData' => $productData
+                'productData' => null,
             ]
         );
     }
 
-    public function updateProduct(Request $request): Response
+    /**
+     * @param int $productId
+     * @return Response redirect на каталог
+     */
+    public function deleteProduct(int $productId): Response
     {
-        $productId = (int) $request->attributes->get('productId');
-        $actualProductVersion = $this->productAPI->findProduct($productId);
-        if ($actualProductVersion === null) {
+        $productData = $this->productAPI->findProduct($productId);
+        if (! $productData)
+        {
             return new Response('', Response::HTTP_NOT_FOUND);
         }
         $currentUser = $this->getUser();
         if (
-            !UserAPI::isUserCreatorOf($currentUser, $actualProductVersion) &&
-            !$this->isGranted('ROLE_ADMIN')
-        ) {
+            ! UserAPI::isUserCreatorOf($currentUser, $productData) &&
+            ! $this->isGranted('ROLE_ADMIN')
+        )
+        {
+            return new Response('', Response::HTTP_FORBIDDEN);
+        }
+        $this->productAPI->deleteProduct($productId);
+
+        return $this->redirectToRoute(
+            'catalog'
+        );
+    }
+
+    /**
+     * @param int $productId
+     * @return Response html страницы товара
+     */
+    public function getProduct(int $productId): Response
+    {
+        $currentUser = $this->getUser();
+        $productData = $this->productAPI->findProduct($productId);
+        $isReadonly = ! UserAPI::isUserCreatorOf($currentUser, $productData) &&
+        ! $this->isGranted('ROLE_ADMIN');
+
+        return $this->render(
+            'product_page.html.twig',
+            [
+                'imagesDirectory' => 'product_images/actual',
+                'productData' => $productData,
+                'isReadonly' => $isReadonly,
+            ]
+        );
+    }
+
+    /**
+     * @return Response html страницы каталога
+     */
+    public function overview(): Response
+    {
+        $productsData = $this->productAPI->getProductList();
+
+        return $this->render(
+            'product_list.html.twig',
+            [
+                'productsData' => $productsData,
+                'imagesDirectory' => 'product_images/actual',
+            ]
+        );
+    }
+
+    /**
+     * @param Request $request данные формы обновления товара
+     * @return Response redirect на страницу каталога
+     */
+    public function updateProduct(Request $request): Response
+    {
+        $productId = (int) $request->attributes->get('productId');
+        $actualProductVersion = $this->productAPI->findProduct($productId);
+        if ($actualProductVersion === null)
+        {
+            return new Response('', Response::HTTP_NOT_FOUND);
+        }
+        $currentUser = $this->getUser();
+        if (
+            ! UserAPI::isUserCreatorOf($currentUser, $actualProductVersion) &&
+            ! $this->isGranted('ROLE_ADMIN')
+        )
+        {
             return new Response('', Response::HTTP_FORBIDDEN);
         }
         $product = new Product(
@@ -124,25 +156,38 @@ class ProductController extends AbstractController
             $actualProductVersion['seller_id']
         );
         $this->productAPI->updateProduct($product);
-        return $this->redirectToRoute('catalog');
+
+        return $this->redirectToRoute(
+            'catalog'
+        );
     }
 
-    public function deleteProduct(int $productId): Response
+    /**
+     * @param int $productId
+     * @return Response html форма обновления товара
+     */
+    public function updateProductView(int $productId): Response
     {
         $productData = $this->productAPI->findProduct($productId);
-        if (!$productData) {
+        if (! $productData)
+        {
             return new Response('', Response::HTTP_NOT_FOUND);
         }
         $currentUser = $this->getUser();
         if (
-            !UserAPI::isUserCreatorOf($currentUser, $productData) &&
-            !$this->isGranted('ROLE_ADMIN')
-        ) {
+            ! UserAPI::isUserCreatorOf($currentUser, $productData) &&
+            ! $this->isGranted('ROLE_ADMIN')
+        )
+        {
             return new Response('', Response::HTTP_FORBIDDEN);
         }
-        $this->productAPI->deleteProduct($productId);
-        return $this->redirectToRoute(
-            'catalog'
+
+        return $this->render(
+            'update_product_form.html.twig',
+            [
+                'imagesDirectory' => 'product_images/actual',
+                'productData' => $productData,
+            ]
         );
     }
 }

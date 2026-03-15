@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Product\App\Models;
+namespace App\Product\App\Model;
 
 use Symfony\Component\HttpFoundation\File\File;
 
 class Product
 {
     public function __construct(
-        private ?int $id = null,
+        private int $id,
         private string $title,
         private float $price,
         private string $description,

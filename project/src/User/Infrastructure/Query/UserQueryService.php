@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace App\User\Infrastructure;
 
@@ -13,31 +13,34 @@ class UserQueryService implements UserQueryServiceInterface
     public function __construct
     (
         private PDO $pdo
-    ) {
-    }
+    )
+    {
+        }
 
     public function findUserByEmail(string $email): ?User
     {
         $query = <<<SQL
-            SELECT * FROM user 
+            SELECT * FROM user
             WHERE email = :email
         SQL;
         $stmt = $this->pdo->prepare($query);
         $stmt->execute(
             [
-                'email' => $email
+                'email' => $email,
             ]
         );
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$data) {
+        if (! $data)
+        {
             return null;
         }
+
         return new User(
             (string) $data['id'],
             $email,
             $data['password_hash'],
             (float) $data['balance'],
-            $data['role']
+            strtoupper($data['role'])
         );
     }
 }

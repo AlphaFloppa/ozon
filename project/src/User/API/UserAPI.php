@@ -8,7 +8,7 @@ use App\User\App\Query\UserQueryServiceInterface;
 use App\User\App\User;
 use App\User\Query\UserRepositoryInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use App\Product\App\Models\Product;
+use App\Product\App\Model\Product;
 
 class UserAPI implements UserAPIInterface
 {

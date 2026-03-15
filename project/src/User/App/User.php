@@ -6,6 +6,7 @@ namespace App\User\App;
 
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use App\Cart\App\Cart;
 
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -18,6 +19,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         private string $password,
         private float $balance,
         string $role
+
     )
     {
         $this->roles = ['ROLE_' . $role];

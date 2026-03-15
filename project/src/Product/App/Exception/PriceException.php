@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace App\Product\App\Exceptions;
+namespace App\Product\App\Exception;
 
 use Exception;
 class PriceException extends Exception

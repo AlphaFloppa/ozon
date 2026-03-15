@@ -6,17 +6,15 @@ namespace App\Product\API;
 
 use App\Product\API\ProductAPIInterface;
 use App\Product\App\Query\ProductQueryServiceInterface;
-use App\Product\App\Models\Product;
-use App\Product\App\Services\ImageServiceInterface;
-use App\Product\App\Services\ProductServiceInterface;
-use App\Product\Infrastructure\Services\ValidationService;
+use App\Product\App\Model\Product;
+use App\Product\App\Model\SaveProductData;
+use App\Product\App\Service\ProductServiceInterface;
 
 class ProductAPI implements ProductAPIInterface
 {
     public function __construct(
         private readonly ProductQueryServiceInterface $queryService,
-        private readonly ProductServiceInterface $productService,
-        private readonly ImageServiceInterface $imageService
+        private readonly ProductServiceInterface $productService
     ) {
     }
 
@@ -30,48 +28,18 @@ class ProductAPI implements ProductAPIInterface
         return $this->queryService->findProductById($id);
     }
 
-    public function saveProduct(Product $product): void
+    public function saveProduct(SaveProductData $product): void
     {
-        ValidationService::validateProduct($product);
-        $newFile = $this->imageService->saveImage($product->getImage());
-        $newProduct = new Product(
-            null,
-            $product->getTitle(),
-            $product->getPrice(),
-            $product->getDescription(),
-            $newFile,
-            $product->getSellerId()
-        );
-        $this->productService->create($newProduct);
+        $this->productService->create($product);
     }
 
     public function updateProduct(Product $product): void
     {
-        ValidationService::validateProduct($product);
-        $previousFilename = $this->queryService
-            ->findProductById($product->getId())['image'];
-        $newFile = $product->getImage();
-        if ($previousFilename !== $product->getImage()->getBasename()) {            //новый (загруженный) файл
-            $newFile = $this->imageService->updateImage($previousFilename, $product->getImage());
-        }
-        $newProduct = new Product(
-            $product->getId(),
-            $product->getTitle(),
-            $product->getPrice(),
-            $product->getDescription(),
-            $newFile,
-            $product->getSellerId()
-        );
-        $this->productService->update($newProduct);
+        $this->productService->update($product);
     }
 
     public function deleteProduct(int $id): void
     {
-        $productData = $this->queryService->findProductById($id);
-        if (!$productData) {
-            return;
-        }
-        $this->imageService->deleteImage($productData['image']);
         $this->productService->delete($id);
     }
 }

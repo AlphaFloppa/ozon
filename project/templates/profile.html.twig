@@ -13,5 +13,8 @@
         <h1>
             {{app.user.getEmail()}}
         </h1>
+        {% for i in app.user.getRoles() %}
+            <h1>{{i}}</h1>
+        {% endfor %}
         <button class = "logout_button">Выйти</button>
     {% endblock %}
